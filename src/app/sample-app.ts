@@ -8,6 +8,8 @@ import { createEpicMiddleware } from 'redux-observable';
 import { IAppState, ISession, rootReducer } from '../store';
 import { SessionActions } from '../actions/session.actions';
 import { SessionEpics } from '../epics/session.epics';
+import { ExerciseActions } from '../actions/exercise.actions';
+import { ExerciseEpics } from '../epics/exercise.epics';
 import { RioAboutPage, RioCounterPage } from '../pages';
 import { middleware, enhancers } from '../store';
 
@@ -42,9 +44,12 @@ export class RioSampleApp {
   constructor(
     private ngRedux: NgRedux<IAppState>,
     private actions: SessionActions,
-    private epics: SessionEpics) {
+    private epics: SessionEpics,
+    private exerciseActions: ExerciseActions,
+    private exerciseEpics: ExerciseEpics) {
 
     middleware.push(createEpicMiddleware(this.epics.login));
+    middleware.push(createEpicMiddleware(this.exerciseEpics.getAll));
     ngRedux.configureStore(rootReducer, {}, middleware, enhancers);
   }
 };

@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const nodeProxy = require('./node-proxy');
 const nodeAppServer = require('./node-app-server');
 const authPassport = require('./auth-passport');
+const exerciseApi = require('./exercises-api');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -21,10 +22,10 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 authPassport.readUsers()
-  .then( (_users) => {
+  .then((_users) => {
     users = _users;
   })
-  .catch( (err) => {
+  .catch((err) => {
     throw err;
   });
 
@@ -40,22 +41,29 @@ app.use(passport.session());
 passport.use(new LocalStrategy(
   (username, password, done) => {
     authPassport.authenticateUser(username, password, users)
-    .then( (authResult) => {
-      return done(null, authResult);
-    })
-    .then(null, (message) => {
-      return done(null, false, message);
-    });
+      .then((authResult) => {
+        return done(null, authResult);
+      })
+      .then(null, (message) => {
+        return done(null, false, message);
+      });
   }
 
 ));
 
-passport.serializeUser( (user, done) => {
+passport.serializeUser((user, done) => {
   done(null, user.meta.id);
 });
 
-passport.deserializeUser( (id, done) => {
+passport.deserializeUser((id, done) => {
   done(null, authPassport.getUserById(id, users));
+});
+
+app.get('/api/exercises', (req, res) => {
+  exerciseApi.readExercises()
+  .then(data=>{
+      res.status(200).send(JSON.stringify(data));
+  });
 });
 
 app.post('/api/auth/login',
