@@ -1,5 +1,3 @@
-CHANGE
-
 [![Circle CI](https://circleci.com/gh/rangle/angular2-redux-starter.svg?style=svg)](https://circleci.com/gh/rangle/angular2-redux-starter)
 
 # Angular 2/TypeScript/Redux/Webpack Starter
